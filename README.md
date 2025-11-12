@@ -79,7 +79,7 @@ Antes de rodar o projeto, certifique-se de ter instalado:
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/seuusuario/Projeto-Painel-Meteorologico-OpenMeteo.git
+   git clone https://github.com/Caiojosue/Projeto-Meteorol-gico-Open-Meteo
    ```
 2. **Acesse a pasta do projeto:**
    ```bash
