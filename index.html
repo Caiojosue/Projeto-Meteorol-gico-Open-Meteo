@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Painel Meteorológico — Open Meteo</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://api.open-meteo.com" />
+    <link rel="preconnect" href="https://geocoding-api.open-meteo.com" />
+  </head>
+  <body data-theme="light">
+    <header class="app-header">
+      <div class="brand">
+        <h1>Painel Meteorológico</h1>
+        <p class="subtitle"> • Diário local • Coordenadas e Localizações</p>
+      </div>
+      <div class="header-actions"></div>
+    </header>
+
+    <main class="container">
+      <section class="card" aria-labelledby="busca-title">
+        <div class="search-hero">
+          <h2 id="busca-title">Buscar previsão</h2>
+          <p class="hero-sub">Cidade, coordenadas ou sua localização — resultados precisos</p>
+        </div>
+        <div class="segmented">
+          <button class="seg-btn active" aria-pressed="true">Cidade</button>
+          <button id="useGeolocationBtn" class="seg-btn">Minha localização</button>
+        </div>
+        <div class="search-grid">
+          <div class="city-box">
+            <label for="cityInput">Cidade</label>
+            <div class="autocomplete input-icon">
+              <input id="cityInput" type="text" placeholder="Ex.: São Paulo, BR" autocomplete="off" />
+              <ul id="citySuggestions" class="suggestions" raria-label="Sugestões de cidades"></ul>
+            </div>
+          </div>
+          <div class="coords">
+            <div>
+              <label for="latInput">Latitude</label>
+              <div class="input-icon">
+                <input id="latInput" type="number" step="0.0001" placeholder="Ex.: -23.55" />
+              </div>
+            </div>
+            <div>
+              <label for="lonInput">Longitude</label>
+              <div class="input-icon">
+                <input id="lonInput" type="number" step="0.0001" placeholder="Ex.: -46.63" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="searchBtn" class="primary">Buscar previsão</button>
+          <button id="saveLocationBtn" class="ghost">Salvar local</button>
+        </div>
+        <div class="recent-wrap">
+          <div class="recent-title">Buscas recentes</div>
+          <div id="recentChips" class="chips"></div>
+        </div>
+        <p id="locationInfo" class="muted"></p>
+        <p id="searchError" class="error" role="alert" hidden></p>
+      </section>
+
+      <section> 
+        <section class="card" aria-labelledby="current-title locals-title">
+          
+          <div class="section-header">
+            <h2 id="current-title">Condições atuais</h2>
+            <p class="section-sub">Temperatura, chuva e vento em tempo real</p>
+          </div>
+          <div id="currentMetrics" class="metrics-grid"></div>
+          
+          <hr class="section-divider"> 
+
+          <h2 id="locais-title">Locais salvos</h2>
+          <div class="saved-locations">
+            <ul id="savedLocationsList" class="saved-list"></ul>
+          </div>
+          <div class="map-wrap">
+            <iframe id="mapFrame" title="Mapa" class="map-frame" loading="lazy" referrerpolicy="no-referrer"></iframe>
+          </div>
+        </section>
+      </section>
+      <section class="card" aria-labelledby="daily-title">
+        <div class="section-header">
+          <h2 id="daily-title">Previsão diária</h2>
+          <p class="section-sub">Máx/Mín, chuva e vento — próximos 7 dias</p>
+        </div>
+        <div id="dailySummary" class="summary-grid" aria-label="Resumo das previsões diárias"></div>
+        <div id="dailyContainer" class="daily-grid"></div>
+      </section>
+
+      <section class="card" aria-labelledby="hourly-title">
+        <h2 id="hourly-title">Previsão horária (próximas 24h)</h2>
+        <div class="sparkline-wrap">
+          <svg id="tempSparkline" class="sparkline" viewBox="0 0 600 120" preserveAspectRatio="none" aria-label="Temperatura nas próximas 24 horas"></svg>
+        </div>
+        <div class="table-wrap">
+          <table class="hourly-table" aria-describedby="hourly-desc">
+            <caption id="hourly-desc" class="sr-only">Tabela de temperatura, chuva e vento por hora</caption>
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Temperatura</th>
+                <th>Chuva</th>
+                <th>Vento</th>
+              </tr>
+            </thead>
+            <tbody id="hourlyBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card diary-card" aria-labelledby="diary-title">
+        <div class="section-header">
+          <h2 id="diary-title">Diário meteorológico</h2>
+          <p class="section-sub">Registre com fotos, edite e organize por data</p>
+        </div>
+
+        <div class="diary-toolbar">
+          <div class="filters">
+            <label for="filterDate">Filtrar por data</label>
+            <input id="filterDate" type="date" />
+          </div>
+          <div class="filters">
+            <label for="filterText">Buscar nas observações</label>
+            <input id="filterText" type="text" placeholder="Ex.: chuva, vento" />
+          </div>
+          <div class="actions">
+            <button id="exportDiaryBtn" class="ghost">Exportar JSON</button>
+            <label class="import-label ghost">
+              Importar JSON
+              <input id="importDiaryFile" type="file" accept="application/json" hidden />
+            </label>
+            <div class="sort-wrap">
+              <label for="sortSelect" class="sr-only">Ordenar</label>
+              <select id="sortSelect" class="ghost">
+                <option value="desc">Mais recentes primeiro</option>
+                <option value="asc">Mais antigos primeiro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="diaryStats" class="stats-grid" aria-live="polite"></div>
+
+        <form id="diaryForm" class="diary-form">
+          <div class="form-row">
+            <div>
+              <label for="entryDate">Data</label>
+              <input id="entryDate" type="date" required />
+            </div>
+            <div class="grow">
+              <label for="entryNote">Observações</label>
+              <textarea id="entryNote" rows="3" placeholder="Ex.: Dia ensolarado" required></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="entryMood">Condição percebida</label>
+              <select id="entryMood">
+                <option value="">Selecione</option>
+                <option value="Ensolarado">Ensolarado</option>
+                <option value="Nublado">Nublado</option>
+                <option value="Chuvoso">Chuvoso</option>
+                <option value="Ventoso">Ventoso</option>
+                <option value="Frio">Frio</option>
+                <option value="Calor">Calor</option>
+              </select>
+            </div>
+            <div class="grow">
+              <label for="entryTags">Tags</label>
+              <input id="entryTags" type="text" placeholder="Ex.: chuva forte, vento" />
+            </div>
+          </div>
+
+          <details class="photo-details">
+            <summary>Foto opcional</summary>
+            <div class="form-row">
+              <div class="grow">
+                <label for="photoUrl">URL da foto</label>
+                <input id="photoUrl" type="url" placeholder="https://..." />
+              </div>
+              <div>
+                <label for="photoFile">ou Arquivo</label>
+                <input id="photoFile" type="file" accept="image/*" />
+              </div>
+            </div>
+          </details>
+
+          <input type="hidden" id="editId" />
+          <div class="actions">
+            <button type="submit" class="primary" id="saveBtn">Salvar anotação</button>
+            <button type="button" class="ghost" id="cancelEditBtn" hidden>Cancelar edição</button>
+          </div>
+        </form>
+
+        <div id="diaryList" class="diary-list timeline"></div>
+      </section>
+
+      <div id="diaryModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modalTitle">Editar anotação</h3>
+            <button id="closeModalBtn" class="ghost" aria-label="Fechar">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-row">
+              <div>
+                <label for="modalDate">Data</label>
+                <input id="modalDate" type="date" required />
+              </div>
+              <div class="grow">
+                <label for="modalNote">Observações</label>
+                <textarea id="modalNote" rows="3" required></textarea>
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label for="modalMood">Condição percebida</label>
+                <select id="modalMood">
+                  <option value="">Selecione</option>
+                  <option value="Ensolarado">Ensolarado</option>
+                  <option value="Nublado">Nublado</option>
+                  <option value="Chuvoso">Chuvoso</option>
+                  <option value="Ventoso">Ventoso</option>
+                  <option value="Frio">Frio</option>
+                  <option value="Calor">Calor</option>
+                </select>
+              </div>
+              <div class="grow">
+                <label for="modalTags">Tags</label>
+                <input id="modalTags" type="text" placeholder="Ex.: chuva forte, vento" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="grow">
+                <label for="modalPhotoUrl">URL da foto</label>
+                <input id="modalPhotoUrl" type="url" placeholder="https://..." />
+              </div>
+              <div>
+                <label for="modalPhotoFile">ou Arquivo</label>
+                <input id="modalPhotoFile" type="file" accept="image/*" />
+              </div>
+            </div>
+            <div class="preview-wrap">
+              <img id="modalPreview" alt="Prévia da imagem" />
+            </div>
+            <input type="hidden" id="modalEditId" />
+          </div>
+          <div class="modal-footer actions">
+            <button id="saveModalBtn" class="primary">Salvar</button>
+            <button id="cancelModalBtn" class="ghost">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        Desenolvido por Caio Sando - Dados por <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open‑Meteo</a>.
+      </p>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
