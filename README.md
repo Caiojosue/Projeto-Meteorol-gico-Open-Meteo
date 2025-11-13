@@ -110,7 +110,7 @@ Caso prefira, você pode criar manualmente seu banco seguindo o script SQL abaix
 
 ## 🔧 Script SQL de Criação:
 ```sql
-CREATE TABLE diario_meteorologico (
+CREATE TABLE diary (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date TEXT NOT NULL,
     tags TEXT,
@@ -121,7 +121,7 @@ CREATE TABLE diario_meteorologico (
 ```
 ## 💾 Exemplo de Dados Inseridos:
 ```sql
-INSERT INTO diario_meteorologico (id, date, tags, observacoes, condicoes_percebidas, photo_url) VALUES
+INSERT INTO diary (id, date, tags, observacoes, condicoes_percebidas, photo_url) VALUES
 (11, '2025-11-12T03:00:00.000Z', 'Chuvas e ventos', 'Dia calorento, porém com chuva', 'Chuvoso', ''),
 (10, '2025-11-20T03:00:00.000Z', 'Calor', 'Dia normal', 'Nublado', NULL);
 ```
