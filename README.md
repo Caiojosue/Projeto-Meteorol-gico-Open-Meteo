@@ -23,11 +23,11 @@ O projeto foi desenvolvido para estudos e demonstração prática de integraçã
 ---
 
 ## 🚀 Funcionalidades
-- Exibição de condições climáticas em tempo real via **Open-Meteo API**.  
-- Registro de observações pessoais sobre o clima.  
-- Armazenamento local das entradas (data, tags, observações, condições e imagem).  
-- Backend em **Node.js** integrado ao banco de dados.  
-- Interface moderna e responsiva.
+- Buscar previsão por coordenadas ou cidade  
+- Exibir previsão diária e horária (temperatura, chuva, vento)
+- CRUD de diário meteorológico: data, observações, foto opcional 
+- Interação com backend (Banco de Dados) em Node.js/Express  
+- Mapa interativo com as localizações cadastradas
 
 ---
 
@@ -125,6 +125,21 @@ INSERT INTO diario_meteorologico (id, date, tags, observacoes, condicoes_percebi
 (11, '2025-11-12T03:00:00.000Z', 'Chuvas e ventos', 'Dia calorento, porém com chuva', 'Chuvoso', ''),
 (10, '2025-11-20T03:00:00.000Z', 'Calor', 'Dia normal', 'Nublado', NULL);
 ```
+
+5. **Configuração de Conexão**
+
+- O arquivo backend/db.js está atualmente configurado com as seguintes credenciais:
+  ```js
+  // backend/db.js
+  const pool = new Pool({
+     user: 'postgres',
+     host: 'localhost',
+     database: 'weather_diary',
+     password: 'sua_senha', // ⚠️ ATENÇÃO: Mude esta senha para a sua senha real do PostgreSQL.
+     port: 5432,
+  });
+  ```
+---  
 
 ## 📦 Exemplo de Estrutura JSON:
 
