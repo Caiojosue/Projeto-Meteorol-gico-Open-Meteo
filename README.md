@@ -139,6 +139,73 @@ INSERT INTO diario_meteorologico (id, date, tags, observacoes, condicoes_percebi
      port: 5432,
   });
   ```
+
+## 💾 Criar um Backup Local do Banco: 
+
+- Caso você queira gerar um novo backup (por exemplo, após atualizar as tabelas ou dados), siga as instruções abaixo conforme seu sistema operacional.
+
+#### 🔹 Requisitos
+- Ter o **PostgreSQL** instalado e acessível no terminal (`psql`, `pg_dump` etc.)
+- Saber o **nome do banco** (`weather_diary`)
+- Saber o **usuário do PostgreSQL** (geralmente `postgres`)
+
+### 🧩 **MacOS / Linux**
+
+1. Abra o terminal
+2. Navegue até a pasta do backend do projeto:
+   ```bash
+   cd ~/Documents/Pasta_do_Projeto/backend
+   ```
+3. Gere o backup com o comando:
+   ```bash
+   pg_dump -U postgres -d weather_diary > weather_diary_backup.sql
+   ```
+4. Confirme que o arquivo weather_diary_backup.sql foi criado dentro da pasta backend
+
+## 🪟 Windows
+
+1. Abra o Prompt de Comando ou PowerShell.
+
+2. Navegue até a pasta do backend:
+ ```bash
+cd "C:\Users\SEU_USUARIO\Documents\Pasta_do_Projeto\backend"
+ ```
+
+3. Execute o comando:
+```bash
+pg_dump -U postgres -d weather_diary > weather_diary_backup.sql
+```
+
+- Verifique que o arquivo weather_diary_backup.sql foi criado
+
+## 🔁 Restaurar o Banco a partir do Backup
+
+- Se você quiser recriar o banco localmente a partir do backup, siga os passos:
+
+Crie o banco vazio:
+```bash
+createdb -U postgres weather_diary
+```
+
+- Restaure o backup:
+```bash
+psql -U postgres -d weather_diary -f weather_diary_backup.sql
+```
+
+- Após isso, todas as tabelas e dados da aplicação estarão disponíveis novamente.
+
+## 📋 Verificando se deu certo
+
+1. Para conferir, acesse o banco via terminal:
+```bash
+psql -U postgres -d weather_diary
+```
+
+2. Liste as tabelas:
+```bash
+\dt
+```
+
 ---  
 
 ## 📦 Exemplo de Estrutura JSON:
